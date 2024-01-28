@@ -5,4 +5,4 @@ theme](https://github.com/thlorenz/oh-my-zsh/blob/master/themes/jonathan.zsh-the
 and the [robby russel
 theme](https://github.com/thlorenz/oh-my-zsh/blob/master/themes/robbyrussell.zsh-theme).
 
-![demo](./demo.png)
+![demo](./Demo.png)
