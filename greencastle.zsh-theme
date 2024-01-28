@@ -16,6 +16,41 @@ function theme_precmd {
     else
         PR_FILLBAR="${PR_SHIFT_IN}\${(1:$(( TERMWIDTH - (prompt_size + pwd_size) ))::${altchar[q]:--}:)}${PR_SHIFT_OUT}"
     fi
+
+    
+    # Making the git prompt
+    PR_MID_BAR=""
+    PR_MID_FILLBAR=""
+    PR_BOTTOM_BAR=""
+    
+    if [[ -n $(git_prompt_info) ]]; then
+        GIT_PREFIX="git::"
+        GIT_BRANCH="$(git symbolic-ref --short HEAD)"
+        local mid_prompt="┣ ${GIT_PREFIX}${GIT_BRANCH} ┫"
+        local MID_WIDTH=$(( COLUMNS - ${ZLE_RPROMPT_INDENT:-1} - ${#mid_prompt} ))
+
+
+        if (( ${#GIT_BRANCH} > COLUMNS/2 )); then
+            # Determining the suffix
+            if [ -z "$(git status --porcelain)" ]; then
+                GIT_SUFFIX="%{$FG[064]%} ---"
+            else
+                GIT_SUFFIX="%{$FG[088]%} 🎁 "
+            fi
+            GIT_SUFFIX+="${HEAVY_RIGHT}"
+
+            PR_MID_FILLBAR="\${(l:$(( ${MID_WIDTH} ))::${PR_HBAR}:)}"
+            PR_MID_BAR="\
+ %{$reset_color%}${GIT_PREFIX}%{$FG[088]%}${GIT_BRANCH}%{$FG[054]%} \
+${(e)PR_MID_FILLBAR}${PR_TLCORNER}"$'\n'
+
+            PR_BOTTOM_FILL_GITSPACE="\${(l:${#GIT_PREFIX}:: :)}"
+            PR_BOTTOM_BAR="${(e)PR_BOTTOM_FILL_GITSPACE}${PR_CURVERIGHT}${PR_LIGHT_LEFTBAR}${GIT_SUFFIX}"
+        else
+            PR_BOTTOM_BAR=" %{$reset_color%}$(git_prompt_info)"
+        fi
+    fi
+
 }
 
 function theme_preexec {
@@ -26,6 +61,7 @@ function theme_preexec {
     fi
 }
 
+
 autoload -U add-zsh-hook
 add-zsh-hook precmd theme_precmd
 add-zsh-hook preexec theme_preexec
@@ -35,55 +71,33 @@ add-zsh-hook preexec theme_preexec
 
 # Modyfying the git prompts
 ZSH_THEME_GIT_PROMPT_PREFIX="git::%{$FG[088]%}"
-ZSH_THEME_GIT_PROMPT_SUFFIX="\u276f %{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_DIRTY=" %{$FG[088]%}🎁 "
-ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[064]%} -- "
+ZSH_THEME_GIT_PROMPT_SUFFIX="\u276f%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_DIRTY="%{$FG[088]%} 🎁 "
+ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[064]%} --- "
 
 
 # Setting characters
-PR_SET_CHARSET=""
-PR_HBAR="─"
-PR_ULCORNER="┌"
-PR_LLCORNER="└"
-PR_LRCORNER="┘"
-PR_URCORNER="┐"
+PR_HBAR="━"
+PR_ULCORNER="┏"
+PR_LLCORNER="┗"
+PR_TLCORNER="┫"
+PR_CURVERIGHT="╰"
+PR_LIGHT_LEFTBAR="╴"
 
-# Deciding if we want to change the titlebar
-case $TERM in
-    xterm*)
-        PR_TITLEBAR=$'%{\e]0;%(!.-=*[ROOT]*=- | .)%n@%m:%~ | ${COLUMNS}x${LINES} | %y\e\\%}'
-    ;;
-    screen)
-        PR_TITLEBAR=$'%{\e_screen \005 (\005t) | %(!.-=[ROOT]=- | .)%n@%m:%~ | ${COLUMNS}x${LINES} | %y\e\\%'
-    ;;
-    *)
-    PR_TITLEBAR=""
-    ;;
-esac
-
-# Decide whether to set a screen title
-if [[ "$TERM" = "screen" ]]; then
-    PR_STITLE=$'%{\ekzsh\e\\%'
-else
-    PR_STITLE=""
-fi
 
 HEAVY_RIGHT="❯"
 HEAVY_LEFT="❮"
 
-
 # Setting the prompt
-PROMPT='${PR_SET_CHARSET}${PR_STITLE}${(e)PR_TITLEBAR}\
+PROMPT='\
 ${FG[054]%}${PR_ULCORNER}${PR_HBAR}${FG[247]%}${HEAVY_LEFT}\
 ${PR_GREEN}%${PR_PWDLEN}<...<%~%<<\
 ${FG[247]%}${HEAVY_RIGHT}\
 ${FG[054]%}${PR_HBAR}${PR_HBAR}${(e)PR_FILLBAR}${PR_HBAR}${PR_GREY}\
 ${FG[064]%} %(?.✔.%{$fg[red]%}✘%f)\
 
-${FG[054]%}${PR_LLCORNER}${PR_BLUE}${PR_HBAR}\
- %{$reset_color%}$(git_prompt_info)$(git_prompt_status)\
-%{$reset_color%}\
-'
+${FG[054]%}${PR_LLCORNER}${PR_MID_BAR}${PR_BOTTOM_BAR}\
+ %{$reset_color%}'
 
 
 # See https://geoff.greer.fm/lscolors/
