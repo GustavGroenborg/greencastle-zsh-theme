@@ -73,7 +73,7 @@ add-zsh-hook preexec theme_preexec
 ZSH_THEME_GIT_PROMPT_PREFIX="git::%{$FG[088]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="\u276f%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_DIRTY="%{$FG[088]%} 🎁 "
-ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[064]%} --- "
+ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[064]%} ---"
 
 
 # Setting characters
