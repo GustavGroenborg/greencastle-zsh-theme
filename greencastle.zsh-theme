@@ -91,9 +91,9 @@ HEAVY_LEFT="❮"
 # Setting the prompt
 PROMPT='\
 ${FG[054]%}${PR_ULCORNER}${PR_HBAR}${FG[247]%}${HEAVY_LEFT}\
-${PR_GREEN}%${PR_PWDLEN}<...<%~%<<\
+%${PR_PWDLEN}<...<%~%<<\
 ${FG[247]%}${HEAVY_RIGHT}\
-${FG[054]%}${PR_HBAR}${PR_HBAR}${(e)PR_FILLBAR}${PR_HBAR}${PR_GREY}\
+${FG[054]%}${PR_HBAR}${PR_HBAR}${(e)PR_FILLBAR}${PR_HBAR}\
 ${FG[064]%} %(?.✔.%{$fg[red]%}✘%f)\
 
 ${FG[054]%}${PR_LLCORNER}${PR_MID_BAR}${PR_BOTTOM_BAR}\
