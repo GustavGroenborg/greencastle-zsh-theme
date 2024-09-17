@@ -23,9 +23,9 @@ function theme_precmd {
     PR_MID_FILLBAR=""
     PR_BOTTOM_BAR=""
     
-    if [[ -n $(git_prompt_info) ]]; then
+    if [ -d .git ]; then
+        GIT_BRANCH=$(git symbolic-ref --short HEAD)
         GIT_PREFIX="git::"
-        GIT_BRANCH="$(git symbolic-ref --short HEAD)"
         local mid_prompt="┣ ${GIT_PREFIX}${GIT_BRANCH} ┫"
         local MID_WIDTH=$(( COLUMNS - ${ZLE_RPROMPT_INDENT:-1} - ${#mid_prompt} ))
 
@@ -47,7 +47,7 @@ ${(e)PR_MID_FILLBAR}${PR_TLCORNER}"$'\n'
             PR_BOTTOM_FILL_GITSPACE="\${(l:${#GIT_PREFIX}:: :)}"
             PR_BOTTOM_BAR="${(e)PR_BOTTOM_FILL_GITSPACE}${PR_CURVERIGHT}${PR_LIGHT_LEFTBAR}${GIT_SUFFIX}"
         else
-            PR_BOTTOM_BAR=" %{$reset_color%}$(git_prompt_info)"
+            PR_BOTTOM_BAR=" %{$reset_color%}"
         fi
     fi
 
@@ -97,7 +97,8 @@ ${FG[054]%}${PR_HBAR}${PR_HBAR}${(e)PR_FILLBAR}${PR_HBAR}\
 ${FG[064]%} %(?.✔.%{$fg[red]%}✘%f)\
 
 ${FG[054]%}${PR_LLCORNER}${PR_MID_BAR}${PR_BOTTOM_BAR}\
- %{$reset_color%}'
+$(git_prompt_info) %{$reset_color%}'
+# Fix this to work for really long branch names at some point.
 
 
 # See https://geoff.greer.fm/lscolors/
